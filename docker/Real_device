@@ -63,6 +63,7 @@ RUN apt-get -qqy update && apt-get -qqy install --no-install-recommends \
     openbox \
     feh \
     python-xdg \
+    python3-pip \
     menu \
     python-numpy \
     net-tools \
@@ -75,27 +76,28 @@ RUN apt-get -qqy update && apt-get -qqy install --no-install-recommends \
     gcc \
     git \
     make \
-    meson \
     musl-dev \
     pkgconf \
     libsdl2-dev \
  && apt clean all \
- && rm -rf /var/lib/apt/lists/*
+ && rm -rf /var/lib/apt/lists/* \
+ && pip3 install setuptools \
+ && pip3 install meson ninja
 
 
 #===========
 # scrcpy - screen copy
 # https://github.com/Genymobile/scrcpy
 #===========
-ARG SCRCPY_VER=1.10
-ARG SERVER_HASH="cbeb1a4e046f1392c1dc73c3ccffd7f86dec4636b505556ea20929687a119390"
+ARG SCRCPY_VER=1.13
+ARG SERVER_HASH="5fee64ca1ccdc2f38550f31f5353c66de3de30c2e929a964e30fa2d005d5f885"
 
 RUN mkdir /root/scrcpy
 RUN curl -L -o /root/scrcpy/scrcpy-code.zip https://github.com/Genymobile/scrcpy/archive/v${SCRCPY_VER}.zip
-RUN curl -L -o /root/scrcpy/scrcpy-server.jar https://github.com/Genymobile/scrcpy/releases/download/v${SCRCPY_VER}/scrcpy-server-v${SCRCPY_VER}.jar
-RUN echo "$SERVER_HASH scrcpy/scrcpy-server.jar" | sha256sum -c -
+RUN curl -L -o /root/scrcpy/scrcpy-server https://github.com/Genymobile/scrcpy/releases/download/v${SCRCPY_VER}/scrcpy-server-v${SCRCPY_VER}
+RUN echo "$SERVER_HASH scrcpy/scrcpy-server" | sha256sum -c -
 RUN cd scrcpy && unzip -x scrcpy-code.zip
-RUN cd scrcpy/scrcpy-${SCRCPY_VER} && meson x --buildtype release --strip -Db_lto=true -Dprebuilt_server=/root/scrcpy/scrcpy-server.jar
+RUN cd scrcpy/scrcpy-${SCRCPY_VER} && meson x --buildtype release --strip -Db_lto=true -Dprebuilt_server=/root/scrcpy/scrcpy-server
 RUN cd scrcpy/scrcpy-${SCRCPY_VER}/x && ninja && ninja install
 RUN rm -rf scrcpy/
 

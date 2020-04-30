@@ -352,7 +352,7 @@ function saltstack(){
 
 ga
 saltstack
-if [ "$REAL_DEVICE" = true ]; then
+if [ "$REAL_DEVICE" = true ] && [ "$APPIUM" = true ]; then
 	echo "Using real device"
 	run_appium
 elif [ "$GENYMOTION" = true ]; then
